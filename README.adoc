@@ -1,0 +1,8 @@
+== Visão por Computador 21-22
+
+=== Configure git to work
+
+[source]
+----
+git config --global http.sslVerify false
+----
