@@ -52,9 +52,9 @@ if __name__ == '__main__':
     cv2.namedWindow(win_name, cv2.WINDOW_AUTOSIZE)
 
     # Display
-    cv2.imshow(win_name, image)
+    # cv2.imshow(win_name, image)
 
-    cv2.waitKey(0)
+    # cv2.waitKey(0)
 
     cv2.imshow(win_name, image_gray)
 
