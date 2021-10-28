@@ -66,4 +66,4 @@ if __name__ == '__main__':
         
     cv2.imshow("Grid Image", image)
     cv2.waitKey(0)
-        # for j in range(0, spacing, w):
+    cv2.imwrite('grid_image.png', image)
