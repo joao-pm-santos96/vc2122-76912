@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
     # Display the image
     cv2.namedWindow("Original Image")
-    cv2.namedWindow("Stretched Image")
+    cv2.namedWindow("Equalized Image")
 
     cv2.imshow("Original Image", image)
 

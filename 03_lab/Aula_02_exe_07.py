@@ -9,6 +9,7 @@ IMPORTS
 import cv2
 import sys
 import numpy as np
+from matplotlib import pyplot as plt
 
 """
 METADATA
@@ -41,36 +42,32 @@ if __name__ == '__main__':
     
     # Read the image from argv
     image = cv2.imread(sys.argv[1] , cv2.IMREAD_UNCHANGED)
+    stretched_image = image.copy()
 
     if  np.shape(image) == ():
         # Failed Reading
         print("Image file could not be open!")
         exit(-1)
 
-    # Display the image
-    cv2.namedWindow("Original Image")
-    cv2.imshow("Original Image", image)
+    b,g,r = cv2.split(image)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    # Define spacing
-    spacing = 20 # px
-
-    img_size = image.shape
-    h = img_size[0]
-    w = img_size[1]
-
-    if (len(img_size) > 2):
-        color = (127,127,127)
-    else:
-        color = (255,255,255)
-    
-    # Draw horizontal lines
-    for i in range(0, h, spacing):
-        cv2.line(image, (0,i), (w-1,i), color, thickness=1)
-
-    # Draw vertical lines
-    for i in range(0, w, spacing):
-        cv2.line(image, (i,0), (i,h-1), color, thickness=1)
-        
-    cv2.imshow("Grid Image", image)
+    cv2.imshow('rgb', image)
+    cv2.imshow('gray', gray)
     cv2.waitKey(0)
-    cv2.imwrite('grid_image.png', image)
+
+    # Color histogram
+    color = ('b','g','r')
+    for i,col in enumerate(color):
+        histr = cv2.calcHist([image],[i],None,[256],[0,256])
+        plt.plot(histr,color = col)
+        plt.xlim([0,256])
+
+    plt.figure(2)
+    histr = cv2.calcHist([gray],[0],None,[256],[0,256])
+    plt.plot(histr,color = 'b')
+    plt.xlim([0,256])
+    
+    plt.show()
+
+    
