@@ -41,7 +41,7 @@ def main():
     th_inv = cv2.bitwise_not(th)
 
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (11,11))
-    dilated = cv2.dilate(th_inv, kernel, iterations=1)
+    dilated = cv2.dilate(th_inv, kernel, iterations=10)
     
     cv2.imshow('1', th)
     cv2.imshow('2', th_inv)
@@ -49,7 +49,7 @@ def main():
     cv2.waitKey(0)
 
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (11,11))
-    dilated = cv2.dilate(th_inv, kernel, iterations=1)
+    dilated = cv2.dilate(th_inv, kernel, iterations=10)
     
     cv2.imshow('2', th_inv)
     cv2.imshow('3', dilated)
