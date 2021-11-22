@@ -489,6 +489,7 @@ This report was written using \LaTeX\ .
 Lets analyse the resolution of the proposed exercises.
 
 \subsection{Ex. 4.1: Dilation}
+\label{sec:dilation}
 
 For this exercise, we were required to apply a dilation to a given image (Fig. \ref{fig:4.1_base}) and, then, analyse the differences between using different kernels and amount of iterations. 
 
@@ -537,6 +538,122 @@ If we apply those same kernels, to the same image, but ten times, the changes ar
   \label{fig:4.1_dil_11x11_10_rectangle}
 \end{figure}
 \FloatBarrier
+
+\subsection{Ex. 4.2: Edge detection with morphological operations}
+
+Using again Fig. \ref{fig:4.1_base}, the author carried out an edge detection methodology using morphological operations. More precisely, a subtraction to the dilated thresholded image was performed, using a 3x3 square kernel. Please Fig. \ref{fig:4.2_edges_3x3_1} for a demonstration.
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.2/edge_3x3_1.png}
+  \caption{Edges found using a 3x3 square kernel.}
+  \label{fig:4.2_edges_3x3_1}
+\end{figure}
+\FloatBarrier
+
+As expected, by using a larger kernel, the dilation image is larger and, therefore, the subtraction will "produce" thicker edges, as shown in Fig. \ref{fig:4.2_edges_23x23_1}.
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.2/edge_23x23_1.png}
+  \caption{Edges found using a 23x23 square kernel.}
+  \label{fig:4.2_edges_23x23_1}
+\end{figure}
+\FloatBarrier
+
+\subsection{Ex. 4.3: Erosion}
+
+Contrarily to the explored on \ref{sec:dilation}, erosion essentially "eats" the borders (inner and outer) of a region. Again using Fig. \ref{fig:4.1_base} as reference, we eroded the, using a circular kernel with eleven pixels of diameter, one and eleven fold. The outcomes are, respectively, on Figs. \ref{fig:4.3_ellipse_11x11_1} and \ref{fig:4.3_ellipse_11x11_11}. In this Figs. it is clear that the use of excessive iterations can lead to the almost (or even complete) removal of a region. 
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.3/ellipse_11x11_1.png}
+  \caption{Erosion using a circular kernel (11x11) with a single iteration.}
+  \label{fig:4.3_ellipse_11x11_1}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.3/ellipse_11x11_11.png}
+  \caption{Erosion using a circular kernel (11x11) with eleven iterations.}
+  \label{fig:4.3_ellipse_11x11_11}
+\end{figure}
+\FloatBarrier
+
+If, by other hand, we do the same procedure but with a rectangular kernel, it is observable that the inner hole gets "squared" as a side effect (Fig. \ref{fig:4.3_rect_11x11_1}). This effect is also noticeable when using eleven iterations as the corner of the kernel get further enough to split the region into two (Fig. \ref{fig:4.3_rect_11x11_11}).
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.3/rect_11x11_1.png}
+  \caption{Erosion using a rectangular kernel (11x11) with a single iteration.}
+  \label{fig:4.3_rect_11x11_1}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.3/rect_11x11_11.png}
+  \caption{Erosion using a rectangular kernel (11x11) with eleven iterations.}
+  \label{fig:4.3_rect_11x11_11}
+\end{figure}
+\FloatBarrier
+
+Using an asymmetric kernel, the effect on Fig. \ref{fig:4.3_rect_11x1_1} is similar to the described for Fig. \ref{fig:4.3_rect_11x11_1} but only in the larger dimension of the kernel.
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.3/rect_11x11_1.png}
+  \caption{Erosion using a rectangular kernel (11x1) with a single iteration.}
+  \label{fig:4.3_rect_11x1_1}
+\end{figure}
+\FloatBarrier
+
+Another way to build am asymmetric kernel is to change its anchor point. In Fig. \ref{fig:4.3_rect_3x3_1_anchor} we used a 3x3 rectangular kernel but with the anchor on the upper left pixel. The effect is not that noticeable but what happens is that the region is shrunk most os the lower right corner due to the said asymmetry of the kernel.
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.3/rect_3x3_1_anchor.png}
+  \caption{Erosion using a rectangular kernel (3x3) with eleven iterations and the upper left corner as the anchor.}
+  \label{fig:4.3_rect_3x3_1_anchor}
+\end{figure}
+\FloatBarrier
+
+\subsection{Ex. 4.4: Segmentation with morphological operations}
+
+Now using Fig. \ref{fig:4.4_base}, the goal is to segment the circular portions of the image using will an erosion, applied twice. 
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.4/mon1.png}
+  \caption{Base figure for this exercise.}
+  \label{fig:4.4_base}
+\end{figure}
+\FloatBarrier
+
+The outputs differ when we use a circular (eleven pixels of diameter, see Fig. \ref{fig:4.4_ellipse_11x11}) or a rectangular (square with a size og 9 pixels, see Fig. \ref{fig:4.4_rect_9x9}) kernel. Since we are trying to segment circular regions, a circular kernels proves to be the best choice as it gives smother borders to the regions. The usage of the square kernel also segments the same regions, but produces borders with noticeable "spikes", which are not problematic in this specific case, but in some other image can lead to regions being connected by the corners created. 
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.4/ellipse_11x11.png}
+  \caption{Erosion using a circular (11x11) kernel, with two iteration.}
+  \label{fig:4.4_ellipse_11x11}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.4/rect_9x9.png}
+  \caption{Erosion using a rectangular (11x11) kernel, with two iteration.}
+  \label{fig:4.4_rect_9x9}
+\end{figure}
+\FloatBarrier
+
+\subsection{Ex. 4.5: Opening}
+
+
+
+
 
 
 

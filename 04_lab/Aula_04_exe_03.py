@@ -40,28 +40,23 @@ def main():
 
     th_inv = cv2.bitwise_not(th)
 
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (11,11))
-    eroded = cv2.erode(th_inv, kernel, iterations=1)
-    
-    cv2.imshow('1', th)
-    cv2.imshow('2', th_inv)
-    cv2.imshow('3', eroded)
-    cv2.waitKey(0)
+    for k in [cv2.MORPH_ELLIPSE, cv2.MORPH_RECT]:
+        for it in [1, 11]:
 
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (11,11))
-    eroded = cv2.erode(th_inv, kernel, iterations=1)
-    
-    cv2.imshow('1', th)
-    cv2.imshow('2', th_inv)
-    cv2.imshow('3', eroded)
-    cv2.waitKey(0)
+            kernel = cv2.getStructuringElement(k, (11,11))
+            eroded = cv2.erode(th_inv, kernel, iterations=it)
+            
+            cv2.imshow('1', th)
+            cv2.imshow('2', th_inv)
+            cv2.imshow('3', eroded)
+            cv2.waitKey(0)
 
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (11,1))
     eroded = cv2.erode(th_inv, kernel, iterations=1)
     
     cv2.imshow('1', th)
     cv2.imshow('2', th_inv)
-    cv2.imshow('3', eroded)
+    cv2.imshow('4', eroded)
     cv2.waitKey(0)
 
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3), anchor=(0,0))
@@ -69,7 +64,9 @@ def main():
     
     cv2.imshow('1', th)
     cv2.imshow('2', th_inv)
-    cv2.imshow('3', eroded)
+    cv2.imshow('5', eroded)
+
+    cv2.imshow('diff', cv2.subtract(th_inv, eroded))
     cv2.waitKey(0)
 
     
