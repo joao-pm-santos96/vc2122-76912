@@ -51,7 +51,9 @@ def callback(event,x,y,flags,param, image, win_name):
 
 def main():
 
-    image = cv2.imread('lena.jpg')
+    # image = cv2.imread('lena.jpg')
+    image = cv2.imread('tools_2.png')
+    
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     

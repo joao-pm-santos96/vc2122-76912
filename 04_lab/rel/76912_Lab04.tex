@@ -651,6 +651,143 @@ The outputs differ when we use a circular (eleven pixels of diameter, see Fig. \
 
 \subsection{Ex. 4.5: Opening}
 
+The opening morphological operation can be useful in a variate of situations. Namely, as proposed in this exercise, we want to segment the circular regions on Fig. \ref{fig:4.5_base} that are overlapped by several lines.
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.5/base.png}
+  \caption{Base image for ex. 4.5.}
+  \label{fig:4.5_base}
+\end{figure}
+\FloatBarrier
+
+By doing a morphological opening with a carefully selected size (in this case, a circular kernel with eleven pixels of diameter), we can very easily and with only one iteration segment the desired regions (see Fig. \ref{fig:4.5_opening_count}) 
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.5/circ_regions_count.png}
+  \caption{Segmented image after the opening operation.}
+  \label{fig:4.5_opening_count}
+\end{figure}
+\FloatBarrier
+
+We can also use the same method, but with asymmetrical kernels, to segment the vertical and horizontal lines on Fig. \ref{fig:4.5_base_lines}.
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.5/base_lines.png}
+  \caption{Image where vertical and horizontal lines will be segmented using the opening operation.}
+  \label{fig:4.5_base_lines}
+\end{figure}
+\FloatBarrier
+
+By using a taller kernel (3x9) the vertical portions will be transformed into line-like shapes during the erosion phase, will the horizontal will vanish. Then, when the dilation happens, the line-like structures get close to the original thickness, performing this way the segmentation. A parallel thought can be developed in the other case, where using a widder kernel (9x3) produces the segmentation of the horizontal structures. 
+
+The outputs are, respectively, Figs. \ref{fig:4.5_vertical} and \ref{fig:4.5_horizontal}.
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.5/vertical.png}
+  \caption{Vertical regions segmented.}
+  \label{fig:4.5_vertical}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.5/horizontal.png}
+  \caption{Horizontal regions segmented.}
+  \label{fig:4.5_horizontal}
+\end{figure}
+\FloatBarrier
+
+\subsection{Ex. 4.6: Closing}
+
+Inversely to the opening operation, the closing operation firstly dilates the image to, only then, erode it.
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.6/base.png}
+  \caption{Base image for closing.}
+  \label{fig:4.6_base}
+\end{figure}
+\FloatBarrier
+
+In this exercise, we used circular kernels with three different diameters: twenty three, five and fifty one pixels. 
+
+When using the diameter of twenty three pixels, the size is just right to fill the black ring as well as the smaller holes (see Fig. \ref{fig:4.6_23}).
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.6/23.png}
+  \caption{Base image closed with a circular kernel of diameter twenty three pixels.}
+  \label{fig:4.6_23}
+\end{figure}
+\FloatBarrier
+
+Using the smaller diameter of the set, the output is not as well "polished" as the smaller holes are still on the image and the black ring is only partially filled (see Fig. \ref{fig:4.6_5}).
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.6/5.png}
+  \caption{Base image closed with a circular kernel of diameter five pixels.}
+  \label{fig:4.6_5}
+\end{figure}
+\FloatBarrier
+
+On the other hand, the largest diameter, the dilation step is enough to fill all the region and then the erosion only sets the object close to its original size (see Fig. \ref{fig:4.6_51}).
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.6/51.png}
+  \caption{Base image closed with a circular kernel of diameter fifty one pixels.}
+  \label{fig:4.6_51}
+\end{figure}
+\FloatBarrier
+
+\subsection{Ex. 4.7: Region Segmentation using Flood-Fill}
+
+The flood-fill operation allows us to segment a image based on the gray level of the neighbors. Is we thinks of a gray image as a 3D image, where the gray value would be the height of that X, Y coordinate, what the flood fill does is filling the region adjacent to the selected pixel that have a "height" within a certain bounds of the selected one.
+
+Using the famous Lena picture as example, we can use the flood-fill operation to segment the regions containing the pixel (430,30) while the gray value is within $\pm 5$ of the chosen pixel, has seen on Fig. \ref{fig:4.7_1}
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.7/lena_1.png}
+  \caption{Flood-fill applied to the lena picture.}
+  \label{fig:4.7_1}
+\end{figure}
+\FloatBarrier
+
+\subsubsection{Interactive Selection}
+
+Using a mouse callback, we can make this process interactive. Figs. \ref{fig:4.7_2}, \ref{fig:4.7_wdg2} and \ref{fig:4.7_tools2} show the outputs of interactive flood-fill applied to different base images.
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.7/lena_2.png}
+  \caption{Flood-fill applied to the lena picture, but a different region.}
+  \label{fig:4.7_2}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.7/wdg2_ff.png}
+  \caption{Flood-fill applied to the wdg2 picture.}
+  \label{fig:4.7_wdg2}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/ex4.7/tools2_ff.png}
+  \caption{Flood-fill applied to the tools2 picture.}
+  \label{fig:4.7_tools2}
+\end{figure}
+\FloatBarrier
+
+
 
 
 

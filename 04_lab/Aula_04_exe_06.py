@@ -40,7 +40,7 @@ def main():
         closing = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel)
         
         cv2.imshow('1', image)
-        cv2.imshow('2', closing)
+        cv2.imshow(str(size), closing)
         cv2.waitKey(0)
 
     
