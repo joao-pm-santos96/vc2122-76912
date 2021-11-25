@@ -21,6 +21,27 @@ board_w = 6
 objpoints = [] # 3d point in real world space
 imgpoints = [] # 2d points in image plane.
 
+# Parameters
+use_camera = True
+do_calibration = False
+
+def draw(img, corners, imgpts):
+    corner = tuple(corners[0].ravel())
+    corner = tuple([int(corner[0]), int(corner[1])])
+    
+    pt0 = tuple(imgpts[0].ravel())
+    pt0 = tuple([int(pt0[0]), int(pt0[1])])
+
+    pt1 = tuple(imgpts[1].ravel())
+    pt1 = tuple([int(pt1[0]), int(pt1[1])])
+
+    pt2 = tuple(imgpts[2].ravel())
+    pt2 = tuple([int(pt2[0]), int(pt2[1])])
+
+    img = cv2.line(img, corner, pt2, (255,0,0), 5)
+    img = cv2.line(img, corner, pt1, (0,255,0), 5)
+    img = cv2.line(img, corner, pt0, (0,0,255), 5)
+    return img
 
 def  FindAndDisplayChessboard(img):
     # Find the chess board corners
@@ -45,14 +66,109 @@ objpoints = [] # 3d point in real world space
 imgpoints = [] # 2d points in image plane.
 
 # Read images
-images = glob.glob('..//images//left*.jpg')
+images = glob.glob('.//images//left*.jpg')
+img_size = None
+capture = cv2 . VideoCapture(0)
 
-for fname in images:
-    img = cv2.imread(fname)
-    ret, corners = FindAndDisplayChessboard(img)
+if do_calibration:
+    if not use_camera:
+        for fname in images:
+            img = cv2.imread(fname)
+
+            if img_size is None:
+                img_size = img.shape
+
+            ret, corners = FindAndDisplayChessboard(img)
+            if ret == True:
+                objpoints.append(objp)
+                imgpoints.append(corners)
+    else:
+
+        while ( True ) :
+            ret , frame = capture.read()
+
+            if img_size is None:
+                img_size = frame.shape
+
+            cv2.imshow ('video', frame)
+
+            ret, corners = FindAndDisplayChessboard(frame)
+            if ret == True:
+                objpoints.append(objp)
+                imgpoints.append(corners)
+            
+            if cv2.waitKey (-1) & 0xFF == ord ("q") :
+                break
+
+        
+
+    # Compute parameters
+    ret, intrinsics, distortion, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, img_size[1::-1], None, None)
+
+    print ( " Intrinsics : " )
+    print ( intrinsics )
+    print ( " Distortion : " )
+    print ( distortion )
+
+    for i in range ( len ( tvecs ) ) :
+        print ( " Translations (% d ) : " % i )
+        print ( tvecs[0])
+        print ( " Rotation (% d ) : " % i )
+        print ( rvecs[0])
+
+    print('Saving')
+    np.savez('camera.npz' , intrinsics = intrinsics , distortion = distortion)
+else:
+    data = np.load('camera.npz')
+    intrinsics = data['intrinsics']
+    distortion = data['distortion']
+    
+    print ( " Intrinsics : " )
+    print ( intrinsics )
+    print ( " Distortion : " )
+    print ( distortion )
+
+
+
+# Draw stuff
+axis = np.float32([[3,0,0], [0,3,0], [0,0,-3]]).reshape(-1,3)
+criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
+
+while ( True ) :
+    ret , img = capture.read()
+
+    if img_size is None:
+        img_size = img.shape
+
+    gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+    ret, corners = cv2.findChessboardCorners(gray, (board_w,board_h),None)
+
     if ret == True:
-        objpoints.append(objp)
-        imgpoints.append(corners)
+        corners2 = cv2.cornerSubPix(gray,corners,(11,11),(-1,-1),criteria)
+        
+        # Find the rotation and translation vectors.
+        ret,rvecs, tvecs = cv2.solvePnP(objp, corners2, intrinsics, distortion)
 
-cv2.waitKey(-1)
+        for i in range ( len ( tvecs ) ) :
+            print ( " Translations (% d ) : " % i )
+            print ( tvecs)
+            print ( " Rotation (% d ) : " % i )
+            print ( rvecs)
+        
+        # project 3D points to image plane
+        imgpts, jac = cv2.projectPoints(axis, rvecs, tvecs, intrinsics, distortion)
+
+        img = draw(img,corners2,imgpts)
+
+    cv2.imshow('img',img)
+
+    if cv2.waitKey (5) & 0xFF == ord ("q") :
+        break
+
+
+
+
+
+
+capture.release()
 cv2.destroyAllWindows()
