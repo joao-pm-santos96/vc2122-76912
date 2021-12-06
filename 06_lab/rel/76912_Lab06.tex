@@ -112,6 +112,8 @@
 
 % *** GRAPHICS RELATED PACKAGES ***
 %
+\usepackage{amsmath}
+\usepackage{subcaption}
 \ifCLASSINFOpdf
   \usepackage[pdftex]{graphicx}
   \usepackage{placeins}
@@ -359,7 +361,7 @@
 % not capitalized unless they are the first or last word of the title.
 % Linebreaks \\ can be used within to get better formatting as desired.
 % Do not put math or special symbols in the title.
-\title{Lab 05, Camera Calibration}
+\title{Lab 06, Stereo Vision}
 %
 %
 % author names and IEEE memberships
@@ -403,7 +405,7 @@
 
 
 % The paper headers
-\markboth{Lab. 05, 76912}%
+\markboth{Lab. 06, 76912}%
 {Shell \MakeLowercase{\textit{et al.}}: Bare Demo of IEEEtran.cls for IEEE Journals}
 % The only time the second header will appear is for the odd numbered pages
 % after the title page when using the twoside option.
@@ -481,7 +483,7 @@ OpenCV, Computer Vision, MRSI, UA, DETI, \LaTeX.
 \IEEEPARstart{T}{his} report is intended to be used alongside the Python3 code 
 developed for this Lab. 
 
-The Lab \#05 is a introduction class to camera geometry and calibration, OpenCV and Python 3. 
+The Lab \#06 is a introduction class to stereo vision, OpenCV and Python 3. 
 
 This report was written using \LaTeX\ .
 
@@ -497,50 +499,129 @@ This report was written using \LaTeX\ .
 
 Lets analyse the resolution of the proposed exercises.
 
-\subsection{Ex. 5.1: Chessboard calibration}
+\subsection{Ex. 6.1: Chessboard calibration}
 
-As stated on section \ref{sec:intro}, the goal of this class was to learn, understand, and implement a camera calibration. To do so, a chessboard pattern is required so the algorithms can obtain real-world data from the taken image and compute the best matching intrinsic parameters from the camera.
+This exercise is based on the examples of the previous class. The minor difference is that, is this one, it was required to obtain the calibration parameter for both a left and a right camera simultaneously. In order to do so, some changes had to be made to the provided code in order to store the image points of both cameras.
 
-By inputting the count of the (inner) corners of the chessboard pattern and the size between each square (for now, the units are not important, so we can set it to one square) the \emph{cv2.calibrateCamera()} method can output the intrinsic parameters of the camera being calibrated.
+This information will be used in the next exercise.
 
-Fig. \ref{fig:chessboard_corners} shows the chessboard corners found with \emph{cv2.findChessboardCorners()} and displayed with \emph{cv2.drawChessboardCorners()}.
+\subsection{Ex. 6.2: Stereo calibration}
+
+The goal of this exercise was to use \emph{cv2.stereoCalibrate()} to obtain the intrinsic parameters of both camera, simultaneously.
+
+To be possible to the calibration algorithm to converge, we had to indicate to the refereed method to use the same focal length, which comes from the fact stated earlier. 
+
+The output for the intrinsic matrices were
+%
+\begin{equation*}
+  right = 
+  \begin{bmatrix}
+    536.826 & 0 & 334.914 \\
+    0 & 535.937 & 242.392 \\
+    0 & 0 & 1
+  \end{bmatrix}
+\end{equation*}
+%
+and
+%
+\begin{equation*}
+  left = 
+  \begin{bmatrix}
+    536.826 & 0 & 335.265 \\
+    0 & 535.937 & 241.698 \\
+    0 & 0 & 1
+  \end{bmatrix}
+\end{equation*}
+%
+which are, as expected, very similar given that both camera are of the same specification.
+
+This method also outputs the distortions coefficients for both cameras alongside with rotation, translation, essential and fundamental matrices from between both cameras.
+
+\subsection{Ex. 6.3: Lens distortion}
+
+Using the parameters obtained and stored on the previous exercise, we are now able to rectify the lens distortion from both cameras. Figs. \ref{fig:right_lens_dist} and \ref{fig:left_lens_dist} show the output of the operation, in both cameras.
 
 \begin{figure}[htp]
   \centering
-  \includegraphics[width=2.5in]{imgs/chessboard_corners.png}
-  \caption{Chessboard corners found on the pattern.}
-  \label{fig:chessboard_corners}
+  \begin{subfigure}[b]{2.5in}
+    \centering
+    \includegraphics[width=\textwidth]{imgs/6.3_right_orig.png}
+    \caption{}
+  \end{subfigure}
+
+  \begin{subfigure}[b]{2.5in}
+    \centering
+    \includegraphics[width=\textwidth]{imgs/6.3_right_undist.png}
+    \caption{}
+  \end{subfigure}
+  \caption{Lens distortion correction for the right camera. (a) Original image and (b) rectified image.}
+  \label{fig:right_lens_dist}
 \end{figure}
 \FloatBarrier
-
-If, for some reason, we decided to use another size for the chessboard pattern, we would need to also update the chessboard size on the \emph{objp} array. Also, if we wanted to use some kind of metric units, we should build this same array with the real-world unit. For example, lets say that each square in the pattern had 20 mm of side. Then, in the \emph{objp}, each computed point should have a distance of 20 all the closest neighbors on the vertical and horizontal axis.
-
-\subsection{Ex. 5.2: Projection of 3D points in the image}
-
-In this exercise, it was requested that the author drawn a axes or wireframe cube on top chessboard in the provided images. Yet, the author diverged from this and chose to do this on the live feed from its camera.
-
-This was only possible after the calibration of the laptop camera used. Fig. \ref{fig:chessboard_axes} demonstrates the output.
 
 \begin{figure}[htp]
   \centering
-  \includegraphics[width=2.5in]{imgs/chessboard_axes.png}
-  \caption{Axes drawn on top of the chessboard pattern.}
-  \label{fig:chessboard_axes}
+  \begin{subfigure}[b]{2.5in}
+    \centering
+    \includegraphics[width=\textwidth]{imgs/6.3_left_orig.png}
+    \caption{}
+  \end{subfigure}
+
+  \begin{subfigure}[b]{2.5in}
+    \centering
+    \includegraphics[width=\textwidth]{imgs/6.3_left_undist.png}
+    \caption{}
+  \end{subfigure}
+  \caption{Lens distortion correction for the left camera. (a) Original image and (b) rectified image.}
+  \label{fig:left_lens_dist}
 \end{figure}
 \FloatBarrier
 
-\subsection{Ex. 5.3: External calibration}
+\subsection{Ex. 6.4: Epipolar lines}
 
-For the final exercise, the author should calibrate the camera on its laptop and save the parameters to a .npz file. This process makes use of the \emph{cv2.solvePnp()} method to compute the rotation and translation vectors for each of the captured images.
+Building upon the previous exercise, we should now complete it in order to now compute and draw the epipolar lines.
 
-These vectors are the ones used on the previous exercise in order to draw the axes system on top of the image when the calibration has already been performed.
+Notice that the method \emph{cv2.computeCorrespondEpilines()} requires, as an argument, the index of the image that contains the points.
 
+Figs. \ref{fig:right_epipolar} and \ref{fig:left_epipolar} show to examples of epipolar lines.
 
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/6.4_right_epipolar.png}
+  \caption{Epipolar line selected on the left image and drawn on the right one.}
+  \label{fig:right_epipolar}
+\end{figure}
+\FloatBarrier
 
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/6.4_left_epipolar.png}
+  \caption{Epipolar line selected on the right image and drawn on the left one.}
+  \label{fig:left_epipolar}
+\end{figure}
+\FloatBarrier
 
+\subsection{Ex. 6.5: Image rectification}
 
+In the final exercise of this class, the goal was to rectify the images using rectification maps so that, when drawing epipolar lines, they would be not only on the same row within the image but also on both images too.
 
+Figs. \ref{fig:6.5_right_epipolar} and \ref{fig:6.5_left_epipolar} show the outcomes. This particular example shows that the calibration procedure had some mismatch because the selected point in one image was (marginally) outside the epipolar line on the other one.
 
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/6.5_right_epipolar.png}
+  \caption{Epipolar line selected on the left image and drawn on the right one.}
+  \label{fig:6.5_right_epipolar}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/6.5_left_epipolar.png}
+  \caption{Epipolar line selected on the right image and drawn on the left one.}
+  \label{fig:6.5_left_epipolar}
+\end{figure}
+\FloatBarrier
 
 
 

@@ -37,7 +37,11 @@ FUNCTIONS DEFINITIONS
 def mouse_handler(event, x, y, flags, params, F, right_image = None, left_image = None):
     if event == cv2.EVENT_LBUTTONDOWN:
         p = np.asarray([x,y])
-        epilineR = cv2.computeCorrespondEpilines(p.reshape(-1,1,2), 1, F)
+
+        which_image = 2 if right_image is not None else 1 if left_image is not None else None
+
+
+        epilineR = cv2.computeCorrespondEpilines(p.reshape(-1,1,2), which_image, F)
         epilineR = epilineR.reshape(-1, 3)[0]
 
         color = np.random.randint(0, 255, 3).tolist()
@@ -53,7 +57,7 @@ def mouse_handler(event, x, y, flags, params, F, right_image = None, left_image 
 
         if right_image is not None:
             cv2.line(right_image, (x0, y0), (x1, y1), color, thickness=4)
-            cv2.imshow(right_window, left_image)
+            cv2.imshow(right_window, right_image)
 
 """
 MAIN
