@@ -13,6 +13,8 @@ import numpy as np
 import cv2
 import glob
 
+from numpy.lib.function_base import disp
+
 
 # Mouse handler
 def mouse_handler_l(event, x, y, flags, params):
@@ -49,6 +51,7 @@ with np.load('stereoParams.npz') as data:
 # Reading image
 left = cv2.imread('..//images//left01.jpg')
 undistort_left = cv2.undistort(left, intrinsics1, distortion1)
+cv2.imwrite('pcl_image.jpg', undistort_left)
 
 right = cv2.imread('..//images//right01.jpg')
 undistort_right = cv2.undistort(right, intrinsics2, distortion2)
@@ -81,16 +84,42 @@ remap_imgr = None
 gray_imager = cv2.cvtColor(undistort_left, cv2.COLOR_BGR2GRAY)
 remap_imgr = cv2.remap(gray_imager, map2x, map2y, cv2.INTER_LINEAR, cv2.BORDER_CONSTANT, 0)
 
-for i in range (0, height, 25):
-    color = np.random.randint(0, 255, 3).tolist()
-    cv2.line(remap_imgl, (0, i), (width, i), color, 1)
-    cv2.line(remap_imgr, (0, i), (width, i), color, 1)
+# Call StereoBM constructor
+stereo = cv2.StereoBM_create(numDisparities=16*5, blockSize=21)
 
-cv2.imshow('Left', remap_imgl)
-cv2.setMouseCallback("Left", mouse_handler_l, remap_imgr)
+# Calculate disparity image
+disparity = stereo.compute(remap_imgl, remap_imgr)
 
-cv2.imshow('Right', remap_imgr)
-cv2.setMouseCallback("Right", mouse_handler_r, remap_imgl)
+# Display 
+disparity = cv2.normalize(src=disparity, dst=disparity, beta=0, alpha=255, norm_type=cv2.NORM_MINMAX)
+disparity = np.uint8(disparity)
 
-cv2.waitKey(-1)
-cv2.destroyAllWindows()
+cv2.imshow('Left', left)
+cv2.imshow('Disparity Map', disparity)
+cv2.waitKey(0)
+
+cloud = cv2.reprojectImageTo3D(disparity, Q)
+np.savez('cloud.npz', cloud=cloud)
+
+
+
+
+
+
+
+
+
+
+# for i in range (0, height, 25):
+#     color = np.random.randint(0, 255, 3).tolist()
+#     cv2.line(remap_imgl, (0, i), (width, i), color, 1)
+#     cv2.line(remap_imgr, (0, i), (width, i), color, 1)
+
+# cv2.imshow('Left', remap_imgl)
+# cv2.setMouseCallback("Left", mouse_handler_l, remap_imgr)
+
+# cv2.imshow('Right', remap_imgr)
+# cv2.setMouseCallback("Right", mouse_handler_r, remap_imgl)
+
+# cv2.waitKey(-1)
+# cv2.destroyAllWindows()

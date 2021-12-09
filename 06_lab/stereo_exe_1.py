@@ -42,7 +42,7 @@ right_corners = []
 img_size = None
 
 # Read images
-images = sorted(glob.glob('.//images//left*.jpg'))
+images = sorted(glob.glob('..//images//left*.jpg'))
 
 for fname in images:
     img = cv2.imread(fname)
@@ -55,7 +55,7 @@ for fname in images:
         obj_points.append(objp)
         left_corners.append(corners)
 
-images = sorted(glob.glob('.//images//right*.jpg'))
+images = sorted(glob.glob('..//images//right*.jpg'))
 
 for fname in images:
     img = cv2.imread(fname)
