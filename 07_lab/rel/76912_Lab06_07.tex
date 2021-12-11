@@ -361,7 +361,7 @@
 % not capitalized unless they are the first or last word of the title.
 % Linebreaks \\ can be used within to get better formatting as desired.
 % Do not put math or special symbols in the title.
-\title{Lab 06, Stereo Vision}
+\title{Lab 06 \& 07, Stereo Vision and 3D vision}
 %
 %
 % author names and IEEE memberships
@@ -405,7 +405,7 @@
 
 
 % The paper headers
-\markboth{Lab. 06, 76912}%
+\markboth{Lab. 06 \& 07, 76912}%
 {Shell \MakeLowercase{\textit{et al.}}: Bare Demo of IEEEtran.cls for IEEE Journals}
 % The only time the second header will appear is for the odd numbered pages
 % after the title page when using the twoside option.
@@ -483,7 +483,7 @@ OpenCV, Computer Vision, MRSI, UA, DETI, \LaTeX.
 \IEEEPARstart{T}{his} report is intended to be used alongside the Python3 code 
 developed for this Lab. 
 
-The Lab \#06 is a introduction class to stereo vision, OpenCV and Python 3. 
+The Labs \#06 and \#07 are introduction classes to stereo vision, 3D vision, OpenCV and Python 3. 
 
 This report was written using \LaTeX\ .
 
@@ -495,9 +495,9 @@ This report was written using \LaTeX\ .
 % \end{figure}
 % \FloatBarrier
 
-\section{Exercises}
+\section{Lab \#06 Exercises}
 
-Lets analyse the resolution of the proposed exercises.
+Lets analyse the resolution of the proposed exercises about stereo vision.
 
 \subsection{Ex. 6.1: Chessboard calibration}
 
@@ -623,10 +623,121 @@ Figs. \ref{fig:6.5_right_epipolar} and \ref{fig:6.5_left_epipolar} show the outc
 \end{figure}
 \FloatBarrier
 
+\section{Lab \#07 Exercises}
+
+Lets analyse the resolution of the proposed exercises about 3D vision.
+
+\subsection{Ex. 7.1: Disparity map}
+
+Using the code listing provided for Stereo Clock Matching, we were asked to compute the disparity map of two gray-level images, taken in the same instant to the same scene, from two different view points. 
+
+Given this, the left image on Fig. \ref{fig:7.1_base} and the corresponding right image (not displayed) combine to output the disparity map on Fig. \ref{fig:7.1_disparity}.
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/7.1_base.png}
+  \caption{Left image used for the disparity map.}
+  \label{fig:7.1_base}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/7.1_disparity.png}
+  \caption{Disparity map.}
+  \label{fig:7.1_disparity}
+\end{figure}
+\FloatBarrier
+
+\subsection{Ex. 7.2: 3D reconstruction}
+
+The \emph{cv2.stereoRectify()} used to compute the rectification transforms for each head of the calibrated stereo camera outputs the $Q$ parameter which is an $4 \times 4$ matrix representing the disparity-to-depth mapping. In the previous exercise, this output was
+%
+\begin{equation*}
+  Q = 
+  \begin{bmatrix}
+    1.0 & 0.0 & 0.0 & -3.221\mathrm{e}{+02} \\
+    0.0 & 1.0 & 0.0 & -2.431\mathrm{e}{+02} \\
+    0.0 & 0.0 & 0.0 & 5.359\mathrm{e}{+02} \\
+    0.0 & 0.0 & -3.002\mathrm{e}{-01} & 0.0
+  \end{bmatrix}
+\end{equation*}
+%
+which, in conjunction with the disparity map and the \emph{cv2.reprojectImageTo3D()} method, outputs the 3D point cloud coordinates of the scene. 
+
+\subsection{Ex. 7.3: Visualization of point cloud}
+
+The Open3D library provides visualization tools for the user to take advantage. On Fig. \ref{fig:7.3_pcl}, using the mentioned tools, we can see the point cloud built on the previous exercise. Note that the point cloud that we visualized has been filtered to remove both \emph{NaN} and \emph{+/-Inf} values. The author also chose to only display point which have the absolute value of Z coordinate between 25 and 75.  
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/7.3_pcl.png}
+  \caption{Filtered point cloud visualization.}
+  \label{fig:7.3_pcl}
+\end{figure}
+\FloatBarrier
+
+\subsection{Ex. 7.4: PCD (point cloud data) 3D format}
+
+Open3D also allows us to read and save point clouds in the native and standard format (.pcd) instead of the NumPy way (.npz). Fig. \ref{fig:7.4_pcd_office} shows two point cloud of a office, taken and viewed from the same perspective (files \emph{filt\_office1.pcd} and \emph{filt\_office2.pcd}).
+
+\begin{figure}[htp]
+  \centering
+  \begin{subfigure}[b]{2.5in}
+    \centering
+    \includegraphics[width=\textwidth]{imgs/7.4_pcd_1.png}
+    \caption{}
+  \end{subfigure}
+
+  \begin{subfigure}[b]{2.5in}
+    \centering
+    \includegraphics[width=\textwidth]{imgs/7.4_pcd_2.png}
+    \caption{}
+  \end{subfigure}
+  \caption{Two point clouds from the same scene.}
+  \label{fig:7.4_pcd_office}
+\end{figure}
+\FloatBarrier
+
+\subsection{Ex. 7.5: ICP alignment}
+
+The \emph{registration\_icp()} method provided by Open3D allows us to compute the ICP algorithm. This algorithm allows us to align a point cloud.
+
+On Fig. \ref{fig:7.5_icp} we can see the combined result of the ICP algorithm. The red point cloud is the reference point cloud (the source), in green is the point cloud that we want to align to (the target) and, finally, in blue is the source point cloud aligned to the target.
+
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/7.5_icp.png}
+  \caption{ICP algorithm output.}
+  \label{fig:7.5_icp}
+\end{figure}
+\FloatBarrier
+
+The refereed method, using a threshold of 0.1 outputs:
+
+\begin{align*}
+  &fitness = 9.849246\mathrm{e}{-01} \\
+  &inlier\_rmse = 2.288494\mathrm{e}{-02} \\
+  &correspondence\_set size = 3920 \\
+  &transformation = \\
+  &\begin{bmatrix}
+    9.979\mathrm{e}{-01} & 9.784\mathrm{e}{-04} & 6.473\mathrm{e}{-02} & 3.726\mathrm{e}{-03} \\
+    -1.186\mathrm{e}{-03} & 9.999\mathrm{e}{-01} & 3.183\mathrm{e}{-03} & -8.172\mathrm{e}{-03} \\
+    -6.472\mathrm{e}{-02} & -3.253\mathrm{e}{-03} & 9.978\mathrm{e}{-01} & -3.038\mathrm{e}{-03} \\
+    0.0 & 0.0 & 0.0 & 1.0
+  \end{bmatrix}
+\end{align*}
 
 
+Notice that is we used a threshold of 0.01, the result would be very different, and the alignment would not work as expected. An example can be found on Fig. \ref{fig:7.5_icp_0.01}.
 
-
+\begin{figure}[htp]
+  \centering
+  \includegraphics[width=2.5in]{imgs/7.5_icp_0.01.png}
+  \caption{ICP algorithm output with threshold 0.01.}
+  \label{fig:7.5_icp_0.01}
+\end{figure}
+\FloatBarrier
 
 
 

@@ -14,35 +14,27 @@ import open3d as o3d
 import cv2
 import copy
 
-def displayPcl(pcl):
+def displayPcl(pcl, size=1):
     # Create axes mesh
-    Axes = o3d.geometry.TriangleMesh.create_coordinate_frame(1)
+    Axes = o3d.geometry.TriangleMesh.create_coordinate_frame(size)
     # show meshes in view
     o3d.visualization.draw_geometries([pcl , Axes])
 
 def draw_registration_result(source, target, transformation):
+    # Create axes mesh
+    Axes = o3d.geometry.TriangleMesh.create_coordinate_frame(1)
+
     source_temp = copy.deepcopy(source)
     target_temp = copy.deepcopy(target)
-    source_temp.paint_uniform_color([1, 0.706, 0])
-    target_temp.paint_uniform_color([0, 0.651, 0.929])
-    source_temp.transform(transformation)
-    o3d.visualization.draw_geometries([source_temp, target_temp],
-                                      zoom=0.4459,
-                                      front=[0.9288, -0.2951, -0.2242],
-                                      lookat=[1.6784, 2.0612, 1.4451],
-                                      up=[-0.3402, -0.9189, -0.1996])
+    source_temp.paint_uniform_color([1, 0, 0]) 
+    target_temp.paint_uniform_color([0, 1, 0]) 
 
+    transformed = copy.deepcopy(source)
+    transformed.transform(transformation)
+    transformed.paint_uniform_color([0, 0, 1]) 
 
-# Create array of random points between [-1,1]
-pcl = o3d.geometry.PointCloud()
-pcl.points = o3d.utility.Vector3dVector(np.random.rand(2500,3) * 2 - 1)
-#pcl.paint_uniform_color([0.0, 0.0, 0.0])
+    o3d.visualization.draw_geometries([source_temp, target_temp, transformed, Axes])
 
-# Create axes mesh
-Axes = o3d.geometry.TriangleMesh.create_coordinate_frame(1)
-
-# shome meshes in view
-o3d.visualization.draw_geometries([pcl , Axes])
 
 # filter cloud
 p = np.load('cloud.npz')['cloud'].reshape(-1,3)
@@ -52,14 +44,15 @@ fp = []
 cp = []
 for i in range(p.shape[0]):
     if np.all(~np.isinf(p[i])):
-        fp.append(p[i])
-        cp.append(np.divide(colors[i], 255))
+        if np.abs(p[i][2]) > 25 and np.abs(p[i][2]) < 75:
+            fp.append(p[i])
+            cp.append(np.divide(colors[i], 255))
 
 pcl = o3d.geometry.PointCloud()
 pcl.points = o3d.utility.Vector3dVector(fp)
 pcl.colors = o3d.utility.Vector3dVector(cp)
 
-displayPcl(pcl)
+displayPcl(pcl, size=10)
 
 # pcl read
 clouds = ['./Depth_Images/filt_office1.pcd', './Depth_Images/filt_office2.pcd']
@@ -71,11 +64,7 @@ for file in clouds:
 source = o3d.io.read_point_cloud(clouds[0])
 target = o3d.io.read_point_cloud(clouds[1])
 
-threshold = 0.02
-trans_init = np.asarray([[0.862, 0.011, -0.507, 0.5],
-                         [-0.139, 0.967, -0.215, 0.7],
-                         [0.487, 0.255, 0.835, -1.4], 
-                         [0.0, 0.0, 0.0, 1.0]])
+threshold = 0.1
 
 print("Apply point-to-point ICP")
 reg_p2p = o3d.pipelines.registration.registration_icp(

@@ -99,6 +99,7 @@ cv2.imshow('Disparity Map', disparity)
 cv2.waitKey(0)
 
 cloud = cv2.reprojectImageTo3D(disparity, Q)
+print(Q)
 np.savez('cloud.npz', cloud=cloud)
 
 
